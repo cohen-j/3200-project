@@ -9,11 +9,11 @@ head: "<head>" title* div* "</head>" -> head
 body: "<body>" (div* | p* | h1* | h2* | h3* | h4* | a* | img* | ul* | ol* | li*)* "</body>" -> body
 div: "<div>" (div* | p* | h1* | h2* | h3* | h4* | a* | img* | ul* | ol* | li*)* "</div>" -> div
 title: "<title>" (WORD* | SYMBOL | NUMBER*)* "</title>" -> title
-p: "<p>" (WORD* | SYMBOL | NUMBER*)* "</p>" -> p
-h1: "<h1>"(WORD* | SYMBOL | NUMBER*)* "</h1>" -> h1
-h2: "<h2>" (WORD* | SYMBOL | NUMBER*)* "</h2>" -> h2
-h3: "<h3>" (WORD* | SYMBOL | NUMBER*)* "</h3>" -> h3
-h4: "<h4>" (WORD* | SYMBOL | NUMBER*)* "</h4>" -> h4
+p: "<p>" (WORD* | SYMBOL* | NUMBER*)* "</p>" -> p
+h1: "<h1>"(WORD* | SYMBOL* | NUMBER*)* "</h1>" -> h1
+h2: "<h2>" (WORD* | SYMBOL* | NUMBER*)* "</h2>" -> h2
+h3: "<h3>" (WORD* | SYMBOL* | NUMBER*)* "</h3>" -> h3
+h4: "<h4>" (WORD* | SYMBOL* | NUMBER*)* "</h4>" -> h4
 a: "<a href=" ESCAPED_STRING ">" (WORD* | SYMBOL | NUMBER*)* "</a>" -> a
 img: "<img src=" ESCAPED_STRING "/>" -> img
 ul: "<ul>" li* "</ul>" -> ul
@@ -172,7 +172,13 @@ def run_instruction(t, name=0):
             file.write('<h4>' + str(t.children[0].value) + '</h4>')
 
     elif t.data == 'a':
-        file.write('<a href=' + content + '>' + t.children[1].value + '</a>')
+        if len(t.children) > 1:
+            textList = []
+            for text in t.children:
+                textList.append(text)
+            file.write('<a href=' + textList[0] + '>' + textList[1] + '</a>')
+        else:
+            file.write('<a href=' + t.children[0] + '>' + '</a>')
 
     elif t.data == 'img':
         file.write('<img src=' + t.children[0].value + '/>')
@@ -203,11 +209,6 @@ def run_instruction(t, name=0):
 
     else:
         raise SyntaxError('Unknown instruction: %s' % t.children)
-
-
-def run_html(program, name):
-    parse_tree = parser.parse(program)
-    run_instruction(parse_tree, name)
 
 sample_1 = """
 <!DOCTYPE html>
@@ -241,6 +242,10 @@ sample_2 = """
 </html>
 """
 
+def run_html(program, name):
+    parse_tree = parser.parse(program)
+    print(parse_tree)
+    run_instruction(parse_tree, name)
 
 def main():
     while True:
@@ -256,10 +261,10 @@ def main():
             print(file.readlines())
 
             run_html(sample_1, 'sample_1')
-            print('SAMPLE PROGRAM #1 RAN AND SAVED AS SAMPLE_1.HTML')
+            print('******SAMPLE PROGRAM #1 RAN AND SAVED AS SAMPLE_1.HTML******')
 
             run_html(sample_2, 'sample_2')
-            print('SAMPLE PROGRAM #2 RAN AND SAVED AS SAMPLE_2.HTML')
+            print('******SAMPLE PROGRAM #2 RAN AND SAVED AS SAMPLE_2.HTML******')
         except Exception as e:
             print(e)
 
