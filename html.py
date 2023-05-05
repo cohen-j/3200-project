@@ -244,15 +244,15 @@ sample_2 = """
 
 def run_html(program, name):
     parse_tree = parser.parse(program)
-    print(parse_tree)
     run_instruction(parse_tree, name)
 
 def main():
     while True:
-        name = input('Enter a file name (exclude .html): ')
-        sequence = input('Write some HTML (beginning with <!DOCTYPE html> <html>) or type "end" to close the program: ')
-        if sequence == 'end':
-            return 0
+        name = input('Enter a file name (exclude .html)  or type "end" to close the program: ')
+        if name == 'end':
+            print('Closing program...')
+            return 0;
+        sequence = input('Write some HTML (beginning with <!DOCTYPE html> <html>): ')
         try:
             run_html(sequence, name)
             file = open(name + '.html', 'r')
